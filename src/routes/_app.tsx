@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { Logo } from "@/components/Logo";
 import {
-  LayoutDashboard, MessageSquare, Phone, Mail, FolderLock, Users, LogOut,
+  LayoutDashboard, MessageSquare, Mail, Users, Shield, LogOut,
   Bell, Search, Sun, Moon, Menu, X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -14,10 +14,9 @@ export const Route = createFileRoute("/_app")({
 
 const baseNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/chat", label: "Chat", icon: MessageSquare },
-  { to: "/calls", label: "Calls", icon: Phone },
   { to: "/mail", label: "Mail", icon: Mail },
-  { to: "/storage", label: "Storage", icon: FolderLock },
+  { to: "/chat", label: "Messages", icon: MessageSquare },
+  { to: "/directory", label: "Directory", icon: Users },
 ] as const;
 
 function AppShell() {
@@ -36,7 +35,7 @@ function AppShell() {
   if (loading || !user) {
     return <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">Loading…</div>;
   }
-  const nav = user.role === "admin" ? [...baseNav, { to: "/admin", label: "Admin", icon: Users }] : baseNav;
+  const nav = user.role === "admin" ? [...baseNav, { to: "/admin", label: "Admin", icon: Shield }] : baseNav;
 
   return (
     <div className="min-h-screen flex">
