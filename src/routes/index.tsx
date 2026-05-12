@@ -62,7 +62,7 @@ function Landing() {
       </main>
 
       <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Crescent Mail Medical. All rights reserved.
+        © {new Date().getFullYear()} Crescent Connect — Crescent Formulations Pvt. Ltd. All rights reserved.
       </footer>
     </div>
   );
