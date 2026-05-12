@@ -13,11 +13,9 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppStorageRouteImport } from './routes/_app.storage'
 import { Route as AppMailRouteImport } from './routes/_app.mail'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppChatRouteImport } from './routes/_app.chat'
-import { Route as AppCallsRouteImport } from './routes/_app.calls'
 import { Route as AppAdminRouteImport } from './routes/_app.admin'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -39,11 +37,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppStorageRoute = AppStorageRouteImport.update({
-  id: '/storage',
-  path: '/storage',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppMailRoute = AppMailRouteImport.update({
   id: '/mail',
   path: '/mail',
@@ -59,11 +52,6 @@ const AppChatRoute = AppChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AppRoute,
 } as any)
-const AppCallsRoute = AppCallsRouteImport.update({
-  id: '/calls',
-  path: '/calls',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppAdminRoute = AppAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -75,22 +63,18 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AppAdminRoute
-  '/calls': typeof AppCallsRoute
   '/chat': typeof AppChatRoute
   '/dashboard': typeof AppDashboardRoute
   '/mail': typeof AppMailRoute
-  '/storage': typeof AppStorageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AppAdminRoute
-  '/calls': typeof AppCallsRoute
   '/chat': typeof AppChatRoute
   '/dashboard': typeof AppDashboardRoute
   '/mail': typeof AppMailRoute
-  '/storage': typeof AppStorageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,11 +83,9 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_app/admin': typeof AppAdminRoute
-  '/_app/calls': typeof AppCallsRoute
   '/_app/chat': typeof AppChatRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/mail': typeof AppMailRoute
-  '/_app/storage': typeof AppStorageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -112,22 +94,18 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/admin'
-    | '/calls'
     | '/chat'
     | '/dashboard'
     | '/mail'
-    | '/storage'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/reset-password'
     | '/admin'
-    | '/calls'
     | '/chat'
     | '/dashboard'
     | '/mail'
-    | '/storage'
   id:
     | '__root__'
     | '/'
@@ -135,11 +113,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/_app/admin'
-    | '/_app/calls'
     | '/_app/chat'
     | '/_app/dashboard'
     | '/_app/mail'
-    | '/_app/storage'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -179,13 +155,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/storage': {
-      id: '/_app/storage'
-      path: '/storage'
-      fullPath: '/storage'
-      preLoaderRoute: typeof AppStorageRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/mail': {
       id: '/_app/mail'
       path: '/mail'
@@ -207,13 +176,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppChatRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/calls': {
-      id: '/_app/calls'
-      path: '/calls'
-      fullPath: '/calls'
-      preLoaderRoute: typeof AppCallsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/admin': {
       id: '/_app/admin'
       path: '/admin'
@@ -226,20 +188,16 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
-  AppCallsRoute: typeof AppCallsRoute
   AppChatRoute: typeof AppChatRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppMailRoute: typeof AppMailRoute
-  AppStorageRoute: typeof AppStorageRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
-  AppCallsRoute: AppCallsRoute,
   AppChatRoute: AppChatRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppMailRoute: AppMailRoute,
-  AppStorageRoute: AppStorageRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -253,3 +211,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
