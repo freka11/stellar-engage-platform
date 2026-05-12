@@ -1,57 +1,128 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import type { Session } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 
 export type Role = "admin" | "employee";
-export interface User {
+
+export interface AuthUser {
   id: string;
-  name: string;
   email: string;
+  name: string;
   role: Role;
-  avatar?: string;
   department?: string;
+  avatar?: string | null;
 }
 
 interface AuthCtx {
-  user: User | null;
+  user: AuthUser | null;
+  session: Session | null;
   loading: boolean;
-  login: (email: string, password: string, role: Role) => Promise<void>;
-  logout: () => void;
+  signIn: (email: string, password: string, expectedRole: Role) => Promise<void>;
+  signUp: (data: { email: string; password: string; fullName: string; role: Role; department: string }) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 const Ctx = createContext<AuthCtx | null>(null);
-const KEY = "cc.auth.user";
+
+async function loadProfile(userId: string, email: string): Promise<AuthUser | null> {
+  const [{ data: profile }, { data: roles }] = await Promise.all([
+    supabase.from("profiles").select("full_name, department, avatar_url, email").eq("id", userId).maybeSingle(),
+    supabase.from("user_roles").select("role").eq("user_id", userId),
+  ]);
+  const role = (roles?.[0]?.role as Role) ?? "employee";
+  return {
+    id: userId,
+    email: profile?.email ?? email,
+    name: profile?.full_name?.trim() || email.split("@")[0],
+    role,
+    department: profile?.department ?? undefined,
+    avatar: profile?.avatar_url ?? null,
+  };
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem(KEY) : null;
-      if (raw) setUser(JSON.parse(raw));
-    } catch {}
-    setLoading(false);
+    // 1. Subscribe FIRST so we never miss an event
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
+      setSession(sess);
+      if (sess?.user) {
+        // Defer Supabase calls to avoid deadlock inside the listener
+        setTimeout(() => {
+          loadProfile(sess.user.id, sess.user.email ?? "").then((u) => {
+            setUser(u);
+            setLoading(false);
+          });
+        }, 0);
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
+    });
+
+    // 2. Then check existing session
+    supabase.auth.getSession().then(({ data: { session: sess } }) => {
+      setSession(sess);
+      if (sess?.user) {
+        loadProfile(sess.user.id, sess.user.email ?? "").then((u) => {
+          setUser(u);
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => sub.subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, _password: string, role: Role) => {
-    await new Promise((r) => setTimeout(r, 500));
-    const name = email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-    const u: User = {
-      id: crypto.randomUUID(),
-      name: name || (role === "admin" ? "Admin User" : "Employee"),
+  const signIn: AuthCtx["signIn"] = async (email, password, expectedRole) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    if (data.user) {
+      const profile = await loadProfile(data.user.id, data.user.email ?? email);
+      if (profile && profile.role !== expectedRole) {
+        await supabase.auth.signOut();
+        throw new Error(
+          `This account is registered as ${profile.role}. Switch to the ${profile.role === "admin" ? "Admin" : "Employee"} tab and try again.`
+        );
+      }
+    }
+  };
+
+  const signUp: AuthCtx["signUp"] = async ({ email, password, fullName, role, department }) => {
+    const redirectTo = `${window.location.origin}/dashboard`;
+    const { error } = await supabase.auth.signUp({
       email,
-      role,
-      department: role === "admin" ? "Operations" : "Cardiology",
-    };
-    localStorage.setItem(KEY, JSON.stringify(u));
-    setUser(u);
+      password,
+      options: {
+        emailRedirectTo: redirectTo,
+        data: { full_name: fullName, role, department },
+      },
+    });
+    if (error) throw error;
   };
 
-  const logout = () => {
-    localStorage.removeItem(KEY);
-    setUser(null);
+  const resetPassword: AuthCtx["resetPassword"] = async (email) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) throw error;
   };
 
-  return <Ctx.Provider value={{ user, loading, login, logout }}>{children}</Ctx.Provider>;
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  return (
+    <Ctx.Provider value={{ user, session, loading, signIn, signUp, resetPassword, signOut }}>
+      {children}
+    </Ctx.Provider>
+  );
 }
 
 export function useAuth() {
