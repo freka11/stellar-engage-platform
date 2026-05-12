@@ -1,18 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Logo } from "@/components/Logo";
-import { ArrowRight, Shield, MessageSquare, Video, Mail, FolderLock, BarChart3 } from "lucide-react";
+import { ArrowRight, Shield, MessageSquare, Mail, Users, BarChart3, Lock } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Landing,
 });
 
 const features = [
-  { icon: MessageSquare, title: "Realtime Chat", desc: "Encrypted team messaging with presence and typing indicators." },
-  { icon: Video, title: "Video & Audio Calls", desc: "HD calls with mute, camera and call management built-in." },
-  { icon: Mail, title: "Company Mail", desc: "Internal mailbox with attachments and powerful search." },
-  { icon: FolderLock, title: "Secure Storage", desc: "HIPAA-aware vault for reports, scans and patient files." },
-  { icon: BarChart3, title: "Analytics", desc: "Live dashboards on activity, performance and adoption." },
-  { icon: Shield, title: "Role-based Access", desc: "Granular permissions for clinicians, staff and admins." },
+  { icon: Mail, title: "Internal Mail", desc: "Send mails between employees with read receipts and search." },
+  { icon: MessageSquare, title: "Realtime Messaging", desc: "Direct messages between colleagues, instantly synced." },
+  { icon: Users, title: "Employee Directory", desc: "Find any colleague by name or department in seconds." },
+  { icon: BarChart3, title: "Admin Analytics", desc: "Live dashboards on internal communication volume." },
+  { icon: Shield, title: "Role-based Access", desc: "Separate workspaces for employees and administrators." },
+  { icon: Lock, title: "Private by Default", desc: "Only participants can read mails and messages." },
 ];
 
 function Landing() {
@@ -34,11 +34,11 @@ function Landing() {
             HIPAA-aware · SOC 2 ready
           </div>
           <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight">
-            The communication backbone for{" "}
+            Internal communication for{" "}
             <span className="text-gradient">modern medical teams</span>
           </h1>
           <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Chat, calls, mail and secure file storage — unified in one enterprise-grade workspace built for clinicians, administrators and care teams.
+            A private, enterprise-grade workspace where employees and administrators send internal mail and direct messages — nothing more, nothing less.
           </p>
           <div className="mt-8 flex items-center justify-center gap-3">
             <Link to="/login" className="inline-flex items-center gap-2 rounded-lg bg-gradient-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow hover:opacity-90 transition">
@@ -62,7 +62,7 @@ function Landing() {
       </main>
 
       <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Crescent Connect Medical. All rights reserved.
+        © {new Date().getFullYear()} Crescent Mail Medical. All rights reserved.
       </footer>
     </div>
   );

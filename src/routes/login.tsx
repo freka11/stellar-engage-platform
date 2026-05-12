@@ -92,7 +92,7 @@ function LoginPage() {
                 <ShieldCheck className="size-4 text-success" /> Encrypted · End-to-end secure
               </div>
               <h1 className="mt-3 text-2xl font-bold tracking-tight">
-                {mode === "signin" ? "Sign in to Crescent Connect" : "Create your account"}
+                {mode === "signin" ? "Sign in to Crescent Mail" : "Create your account"}
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 {mode === "signin" ? "Choose your role to access the right workspace." : "Choose a role for your new account."}
@@ -160,7 +160,7 @@ function LoginPage() {
 
             {mode !== "forgot" && (
               <p className="text-center text-sm text-muted-foreground">
-                {mode === "signin" ? "New to Crescent Connect? " : "Already have an account? "}
+                {mode === "signin" ? "New to Crescent Mail? " : "Already have an account? "}
                 <button type="button" onClick={() => setMode(mode === "signin" ? "signup" : "signin")} className="text-primary font-medium hover:underline">
                   {mode === "signin" ? "Create an account" : "Sign in"}
                 </button>

@@ -7,7 +7,7 @@ export function Logo({ className = "" }: { className?: string }) {
         </svg>
       </div>
       <div className="leading-tight">
-        <div className="font-semibold tracking-tight">Crescent Connect</div>
+        <div className="font-semibold tracking-tight">Crescent Mail</div>
         <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Medical Enterprise</div>
       </div>
     </div>
