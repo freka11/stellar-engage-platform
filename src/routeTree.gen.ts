@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppStorageRouteImport } from './routes/_app.storage'
 import { Route as AppMailRouteImport } from './routes/_app.mail'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppChatRouteImport } from './routes/_app.chat'
@@ -30,6 +31,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppStorageRoute = AppStorageRouteImport.update({
+  id: '/storage',
+  path: '/storage',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppMailRoute = AppMailRouteImport.update({
   id: '/mail',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof AppChatRoute
   '/dashboard': typeof AppDashboardRoute
   '/mail': typeof AppMailRoute
+  '/storage': typeof AppStorageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/chat': typeof AppChatRoute
   '/dashboard': typeof AppDashboardRoute
   '/mail': typeof AppMailRoute
+  '/storage': typeof AppStorageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,12 +85,20 @@ export interface FileRoutesById {
   '/_app/chat': typeof AppChatRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/mail': typeof AppMailRoute
+  '/_app/storage': typeof AppStorageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/calls' | '/chat' | '/dashboard' | '/mail'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/calls'
+    | '/chat'
+    | '/dashboard'
+    | '/mail'
+    | '/storage'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/calls' | '/chat' | '/dashboard' | '/mail'
+  to: '/' | '/login' | '/calls' | '/chat' | '/dashboard' | '/mail' | '/storage'
   id:
     | '__root__'
     | '/'
@@ -92,6 +108,7 @@ export interface FileRouteTypes {
     | '/_app/chat'
     | '/_app/dashboard'
     | '/_app/mail'
+    | '/_app/storage'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -122,6 +139,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/storage': {
+      id: '/_app/storage'
+      path: '/storage'
+      fullPath: '/storage'
+      preLoaderRoute: typeof AppStorageRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/mail': {
       id: '/_app/mail'
@@ -159,6 +183,7 @@ interface AppRouteChildren {
   AppChatRoute: typeof AppChatRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppMailRoute: typeof AppMailRoute
+  AppStorageRoute: typeof AppStorageRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -166,6 +191,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppChatRoute: AppChatRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppMailRoute: AppMailRoute,
+  AppStorageRoute: AppStorageRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
