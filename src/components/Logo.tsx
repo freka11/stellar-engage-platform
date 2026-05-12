@@ -1,15 +1,17 @@
-export function Logo({ className = "" }: { className?: string }) {
+import logoUrl from "@/assets/crescent-logo.png";
+
+export function Logo({ className = "", showWordmark = true }: { className?: string; showWordmark?: boolean }) {
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      <div className="relative size-9 rounded-xl bg-gradient-primary shadow-glow flex items-center justify-center">
-        <svg viewBox="0 0 24 24" className="size-5 text-primary-foreground" fill="currentColor">
-          <path d="M16 4a8 8 0 1 0 0 16 6 6 0 1 1 0-16z" />
-        </svg>
+    <div className={`flex items-center gap-2.5 ${className}`}>
+      <div className="relative h-10 w-10 rounded-xl bg-white ring-1 ring-border shadow-sm flex items-center justify-center overflow-hidden">
+        <img src={logoUrl} alt="Crescent Formulations" className="h-8 w-8 object-contain" />
       </div>
-      <div className="leading-tight">
-        <div className="font-semibold tracking-tight">Crescent Mail</div>
-        <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Medical Enterprise</div>
-      </div>
+      {showWordmark && (
+        <div className="leading-tight">
+          <div className="font-semibold tracking-tight">Crescent Mail</div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Crescent Formulations Pvt. Ltd.</div>
+        </div>
+      )}
     </div>
   );
 }

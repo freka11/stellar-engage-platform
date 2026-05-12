@@ -1,0 +1,2 @@
+update public.profiles set full_name = 'Javeed Shaik', department = 'Administration' where email = 'admin@crescent.health';
+update public.profiles set full_name = 'Junid Shaik', department = 'Cardiology' where email = 'employee@crescent.health';
