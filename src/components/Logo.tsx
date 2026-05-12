@@ -8,8 +8,8 @@ export function Logo({ className = "", showWordmark = true }: { className?: stri
       </div>
       {showWordmark && (
         <div className="leading-tight">
-          <div className="font-semibold tracking-tight">Crescent Mail</div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Crescent Formulations Pvt. Ltd.</div>
+          <div className="font-semibold tracking-tight">Crescent Connect</div>
+          <div className="text-[10px] uppercase tracking-[0.18em] opacity-70">Crescent Formulations Pvt. Ltd.</div>
         </div>
       )}
     </div>
