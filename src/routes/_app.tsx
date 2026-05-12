@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useNavigate, useRouterState, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { Logo } from "@/components/Logo";
@@ -9,11 +9,6 @@ import {
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_app")({
-  beforeLoad: () => {
-    if (typeof window !== "undefined" && !localStorage.getItem("cc.auth.user")) {
-      throw redirect({ to: "/login" });
-    }
-  },
   component: AppShell,
 });
 
@@ -26,7 +21,7 @@ const baseNav = [
 ] as const;
 
 function AppShell() {
-  const { user, logout } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
@@ -34,7 +29,13 @@ function AppShell() {
 
   useEffect(() => { setOpen(false); }, [path]);
 
-  if (!user) return null;
+  useEffect(() => {
+    if (!loading && !user) navigate({ to: "/login" });
+  }, [loading, user, navigate]);
+
+  if (loading || !user) {
+    return <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">Loading…</div>;
+  }
   const nav = user.role === "admin" ? [...baseNav, { to: "/admin", label: "Admin", icon: Users }] : baseNav;
 
   return (
@@ -65,7 +66,7 @@ function AppShell() {
               <div className="text-sm font-medium truncate">{user.name}</div>
               <div className="text-xs text-muted-foreground truncate capitalize">{user.role} · {user.department}</div>
             </div>
-            <button onClick={() => { logout(); navigate({ to: "/login" }); }} className="text-muted-foreground hover:text-destructive p-1.5" title="Sign out">
+            <button onClick={async () => { await signOut(); navigate({ to: "/login" }); }} className="text-muted-foreground hover:text-destructive p-1.5" title="Sign out">
               <LogOut className="size-4" />
             </button>
           </div>
