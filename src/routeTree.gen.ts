@@ -17,6 +17,7 @@ import { Route as AppMailRouteImport } from './routes/_app.mail'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppChatRouteImport } from './routes/_app.chat'
 import { Route as AppCallsRouteImport } from './routes/_app.calls'
+import { Route as AppAdminRouteImport } from './routes/_app.admin'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -57,10 +58,16 @@ const AppCallsRoute = AppCallsRouteImport.update({
   path: '/calls',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminRoute = AppAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/admin': typeof AppAdminRoute
   '/calls': typeof AppCallsRoute
   '/chat': typeof AppChatRoute
   '/dashboard': typeof AppDashboardRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/admin': typeof AppAdminRoute
   '/calls': typeof AppCallsRoute
   '/chat': typeof AppChatRoute
   '/dashboard': typeof AppDashboardRoute
@@ -81,6 +89,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/_app/admin': typeof AppAdminRoute
   '/_app/calls': typeof AppCallsRoute
   '/_app/chat': typeof AppChatRoute
   '/_app/dashboard': typeof AppDashboardRoute
@@ -92,18 +101,28 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/admin'
     | '/calls'
     | '/chat'
     | '/dashboard'
     | '/mail'
     | '/storage'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/calls' | '/chat' | '/dashboard' | '/mail' | '/storage'
+  to:
+    | '/'
+    | '/login'
+    | '/admin'
+    | '/calls'
+    | '/chat'
+    | '/dashboard'
+    | '/mail'
+    | '/storage'
   id:
     | '__root__'
     | '/'
     | '/_app'
     | '/login'
+    | '/_app/admin'
     | '/_app/calls'
     | '/_app/chat'
     | '/_app/dashboard'
@@ -175,10 +194,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCallsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin': {
+      id: '/_app/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AppAdminRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppAdminRoute: typeof AppAdminRoute
   AppCallsRoute: typeof AppCallsRoute
   AppChatRoute: typeof AppChatRoute
   AppDashboardRoute: typeof AppDashboardRoute
@@ -187,6 +214,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAdminRoute: AppAdminRoute,
   AppCallsRoute: AppCallsRoute,
   AppChatRoute: AppChatRoute,
   AppDashboardRoute: AppDashboardRoute,
