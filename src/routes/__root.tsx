@@ -52,8 +52,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Crescent Connect — Secure Medical Enterprise Platform" },
-      { name: "description", content: "Crescent Connect is a HIPAA-aware enterprise communication platform for medical teams: chat, calls, mail, file storage and admin." },
+      { title: "Crescent Mail — Secure Internal Communication for Medical Teams" },
+      { name: "description", content: "Crescent Mail is a private internal communication platform for medical employees and admins: internal mail, realtime messaging, employee directory and admin analytics." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
