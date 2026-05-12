@@ -183,8 +183,8 @@
 }
 
 @keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 oklch(0.62 0.14 180 / 0.5); }
-  70% { box-shadow: 0 0 0 14px oklch(0.62 0.14 180 / 0); }
-  100% { box-shadow: 0 0 0 0 oklch(0.62 0.14 180 / 0); }
+  0% { box-shadow: 0 0 0 0 oklch(0.65 0.22 350 / 0.5); }
+  70% { box-shadow: 0 0 0 14px oklch(0.65 0.22 350 / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(0.65 0.22 350 / 0); }
 }
 .animate-pulse-ring { animation: pulse-ring 2s infinite; }
