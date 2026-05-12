@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppMailRouteImport } from './routes/_app.mail'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppChatRouteImport } from './routes/_app.chat'
 import { Route as AppCallsRouteImport } from './routes/_app.calls'
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppMailRoute = AppMailRouteImport.update({
+  id: '/mail',
+  path: '/mail',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/calls': typeof AppCallsRoute
   '/chat': typeof AppChatRoute
   '/dashboard': typeof AppDashboardRoute
+  '/mail': typeof AppMailRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/calls': typeof AppCallsRoute
   '/chat': typeof AppChatRoute
   '/dashboard': typeof AppDashboardRoute
+  '/mail': typeof AppMailRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -68,12 +76,13 @@ export interface FileRoutesById {
   '/_app/calls': typeof AppCallsRoute
   '/_app/chat': typeof AppChatRoute
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/mail': typeof AppMailRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/calls' | '/chat' | '/dashboard'
+  fullPaths: '/' | '/login' | '/calls' | '/chat' | '/dashboard' | '/mail'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/calls' | '/chat' | '/dashboard'
+  to: '/' | '/login' | '/calls' | '/chat' | '/dashboard' | '/mail'
   id:
     | '__root__'
     | '/'
@@ -82,6 +91,7 @@ export interface FileRouteTypes {
     | '/_app/calls'
     | '/_app/chat'
     | '/_app/dashboard'
+    | '/_app/mail'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -113,6 +123,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/mail': {
+      id: '/_app/mail'
+      path: '/mail'
+      fullPath: '/mail'
+      preLoaderRoute: typeof AppMailRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/dashboard': {
       id: '/_app/dashboard'
       path: '/dashboard'
@@ -141,12 +158,14 @@ interface AppRouteChildren {
   AppCallsRoute: typeof AppCallsRoute
   AppChatRoute: typeof AppChatRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppMailRoute: typeof AppMailRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppCallsRoute: AppCallsRoute,
   AppChatRoute: AppChatRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppMailRoute: AppMailRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
