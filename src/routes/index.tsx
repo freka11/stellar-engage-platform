@@ -1,13 +1,8 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Logo } from "@/components/Logo";
 import { ArrowRight, Shield, MessageSquare, Video, Mail, FolderLock, BarChart3 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: () => {
-    if (typeof window !== "undefined" && localStorage.getItem("cc.auth.user")) {
-      throw redirect({ to: "/dashboard" });
-    }
-  },
   component: Landing,
 });
 

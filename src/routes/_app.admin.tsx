@@ -1,18 +1,10 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth";
 import { UserPlus, Trash2, Building2, Activity as ActivityIcon, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_app/admin")({
-  beforeLoad: () => {
-    if (typeof window !== "undefined") {
-      const raw = localStorage.getItem("cc.auth.user");
-      const u = raw ? JSON.parse(raw) : null;
-      if (!u || u.role !== "admin") throw redirect({ to: "/dashboard" });
-    }
-  },
-  component: Admin,
-});
+export const Route = createFileRoute("/_app/admin")({ component: Admin });
 
 type Emp = { id: string; name: string; email: string; dept: string; role: string; status: "active" | "invited" };
 
@@ -33,6 +25,11 @@ const logs = [
 ];
 
 function Admin() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!loading && user && user.role !== "admin") navigate({ to: "/dashboard" });
+  }, [loading, user, navigate]);
   const [emps, setEmps] = useState<Emp[]>(initialEmps);
   const [tab, setTab] = useState<"employees" | "departments" | "logs" | "analytics">("employees");
   const [form, setForm] = useState({ name: "", email: "", dept: departments[0], role: "Doctor" });
