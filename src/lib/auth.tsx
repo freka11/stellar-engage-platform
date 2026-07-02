@@ -27,13 +27,13 @@ const Ctx = createContext<AuthCtx | null>(null);
 
 async function loadProfile(userId: string, email: string): Promise<AuthUser | null> {
   const [{ data: profile }, { data: roles }] = await Promise.all([
-    supabase.from("profiles").select("full_name, department, avatar_url, email").eq("id", userId).maybeSingle(),
+    supabase.from("profiles").select("full_name, department, avatar_url").eq("id", userId).maybeSingle(),
     supabase.from("user_roles").select("role").eq("user_id", userId),
   ]);
   const role = (roles?.[0]?.role as Role) ?? "employee";
   return {
     id: userId,
-    email: profile?.email ?? email,
+    email,
     name: profile?.full_name?.trim() || email.split("@")[0],
     role,
     department: profile?.department ?? undefined,
