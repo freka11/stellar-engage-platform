@@ -115,7 +115,7 @@ function MailPage() {
 
   const list = items.filter((m) => {
     const other = folder === "inbox" ? peopleById[m.sender_id] : peopleById[m.recipient_id];
-    const haystack = `${m.subject} ${m.body} ${other?.full_name ?? ""} ${other?.email ?? ""}`.toLowerCase();
+    const haystack = `${m.subject} ${m.body} ${other?.full_name ?? ""} ${""}`.toLowerCase();
     return haystack.includes(q.toLowerCase());
   });
   const unreadCount = items.filter((m) => folder === "inbox" && !m.read).length;
@@ -148,7 +148,7 @@ function MailPage() {
           {loading && <div className="p-8 text-center text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin inline" /></div>}
           {!loading && list.map((m) => {
             const other = folder === "inbox" ? peopleById[m.sender_id] : peopleById[m.recipient_id];
-            const name = other?.full_name || other?.email || "Unknown";
+            const name = other?.full_name || "Unknown";
             const time = new Date(m.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
             return (
               <button key={m.id} onClick={() => openMail(m)} className={`w-full text-left p-4 border-b border-border/60 hover:bg-accent/40 transition ${open?.id === m.id ? "bg-accent/60" : ""}`}>
@@ -178,8 +178,8 @@ function MailPage() {
                 {(peopleById[open.sender_id]?.full_name || "?").split(" ").map((s) => s[0]).slice(0, 2).join("")}
               </div>
               <div>
-                <div className="text-sm font-medium">{peopleById[open.sender_id]?.full_name || peopleById[open.sender_id]?.email || "Unknown"}</div>
-                <div className="text-xs text-muted-foreground">to {peopleById[open.recipient_id]?.full_name || peopleById[open.recipient_id]?.email} · {new Date(open.created_at).toLocaleString()}</div>
+                <div className="text-sm font-medium">{peopleById[open.sender_id]?.full_name || "Unknown"}</div>
+                <div className="text-xs text-muted-foreground">to {peopleById[open.recipient_id]?.full_name || "Unknown"} · {new Date(open.created_at).toLocaleString()}</div>
               </div>
             </div>
             <div className="mt-6 text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">{open.body}</div>
@@ -200,7 +200,7 @@ function MailPage() {
               <select required value={composeTo} onChange={(e) => setComposeTo(e.target.value)} className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm">
                 <option value="">Select recipient…</option>
                 {people.filter((p) => p.id !== user?.id).map((p) => (
-                  <option key={p.id} value={p.id}>{p.full_name || p.email} {p.department ? `· ${p.department}` : ""}</option>
+                  <option key={p.id} value={p.id}>{p.full_name || "Unnamed"} {p.department ? `· ${p.department}` : ""}</option>
                 ))}
               </select>
               <input required value={composeSubject} onChange={(e) => setComposeSubject(e.target.value)} className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm" placeholder="Subject" />
