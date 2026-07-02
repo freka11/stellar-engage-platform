@@ -21,9 +21,9 @@ function Dashboard() {
         supabase.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", user.id).eq("read", false),
         supabase.from("mails").select("id", { count: "exact", head: true }).eq("sender_id", user.id).gte("created_at", since.toISOString()),
         supabase.from("mails").select("id, subject, created_at, sender_id").eq("recipient_id", user.id).order("created_at", { ascending: false }).limit(5),
-        supabase.from("profiles").select("id, full_name, email"),
+        supabase.from("profiles").select("id, full_name"),
       ]);
-      const byId = Object.fromEntries((profiles.data ?? []).map((p) => [p.id, p.full_name || p.email]));
+      const byId = Object.fromEntries((profiles.data ?? []).map((p) => [p.id, p.full_name || "Unknown"]));
       setStats({
         employees: emp.count ?? 0,
         unreadMail: unreadMail.count ?? 0,
