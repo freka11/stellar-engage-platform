@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_app/chat")({
   validateSearch: (s: Record<string, unknown>) => ({ to: typeof s.to === "string" ? s.to : undefined }),
 });
 
-type Profile = { id: string; full_name: string; email: string; department: string | null };
+type Profile = { id: string; full_name: string; department: string | null };
 type Msg = { id: string; sender_id: string; recipient_id: string; body: string; read: boolean; created_at: string };
 
 function Chat() {
@@ -29,7 +29,7 @@ function Chat() {
     if (!user) return;
     (async () => {
       const [{ data: profiles }, { data: unread }] = await Promise.all([
-        supabase.from("profiles").select("id, full_name, email, department").order("full_name"),
+        supabase.from("profiles").select("id, full_name, department").order("full_name"),
         supabase.from("messages").select("sender_id").eq("recipient_id", user.id).eq("read", false),
       ]);
       const ppl = ((profiles ?? []) as Profile[]).filter((p) => p.id !== user.id);
