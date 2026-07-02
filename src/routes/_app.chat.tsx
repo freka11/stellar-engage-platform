@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_app/chat")({
   validateSearch: (s: Record<string, unknown>) => ({ to: typeof s.to === "string" ? s.to : undefined }),
 });
 
-type Profile = { id: string; full_name: string; email: string; department: string | null };
+type Profile = { id: string; full_name: string; department: string | null };
 type Msg = { id: string; sender_id: string; recipient_id: string; body: string; read: boolean; created_at: string };
 
 function Chat() {
@@ -29,7 +29,7 @@ function Chat() {
     if (!user) return;
     (async () => {
       const [{ data: profiles }, { data: unread }] = await Promise.all([
-        supabase.from("profiles").select("id, full_name, email, department").order("full_name"),
+        supabase.from("profiles").select("id, full_name, department").order("full_name"),
         supabase.from("messages").select("sender_id").eq("recipient_id", user.id).eq("read", false),
       ]);
       const ppl = ((profiles ?? []) as Profile[]).filter((p) => p.id !== user.id);
@@ -98,7 +98,7 @@ function Chat() {
   const peopleSorted = useMemo(() => {
     return [...people].sort((a, b) => (unreadByPeer[b.id] ?? 0) - (unreadByPeer[a.id] ?? 0));
   }, [people, unreadByPeer]);
-  const filtered = peopleSorted.filter((p) => (p.full_name + " " + p.email).toLowerCase().includes(q.toLowerCase()));
+  const filtered = peopleSorted.filter((p) => (p.full_name).toLowerCase().includes(q.toLowerCase()));
 
   if (loading) return <div className="text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin inline" /> Loading conversations…</div>;
 
@@ -113,14 +113,14 @@ function Chat() {
         </div>
         <div className="flex-1 overflow-y-auto">
           {filtered.map((c) => {
-            const initials = (c.full_name || c.email).split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
+            const initials = (c.full_name || "Unnamed").split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
             const unread = unreadByPeer[c.id] ?? 0;
             return (
               <button key={c.id} onClick={() => setActive(c)} className={`w-full text-left px-3 py-3 flex items-center gap-3 border-b border-border/60 hover:bg-accent/40 transition ${active?.id === c.id ? "bg-accent/60" : ""}`}>
                 <div className="size-10 rounded-full bg-gradient-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">{initials}</div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium truncate">{c.full_name || c.email}</div>
-                  <div className="text-xs text-muted-foreground truncate">{c.department ?? c.email}</div>
+                  <div className="text-sm font-medium truncate">{c.full_name || "Unnamed"}</div>
+                  <div className="text-xs text-muted-foreground truncate">{c.department ?? ""}</div>
                 </div>
                 {unread > 0 && <span className="text-[10px] bg-gradient-primary text-primary-foreground rounded-full px-1.5 py-0.5">{unread}</span>}
               </button>
@@ -135,11 +135,11 @@ function Chat() {
           <>
             <div className="p-4 border-b border-border flex items-center gap-3">
               <div className="size-10 rounded-full bg-gradient-primary text-primary-foreground flex items-center justify-center font-semibold">
-                {(active.full_name || active.email).split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase()}
+                {(active.full_name || "Unnamed").split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase()}
               </div>
               <div>
-                <div className="font-medium">{active.full_name || active.email}</div>
-                <div className="text-xs text-muted-foreground">{active.department ?? active.email}</div>
+                <div className="font-medium">{active.full_name || "Unnamed"}</div>
+                <div className="text-xs text-muted-foreground">{active.department ?? ""}</div>
               </div>
             </div>
 
@@ -162,7 +162,7 @@ function Chat() {
             </div>
 
             <div className="p-3 border-t border-border flex items-center gap-2">
-              <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()} placeholder={`Message ${active.full_name || active.email}…`} className="flex-1 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring/30" />
+              <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()} placeholder={`Message ${active.full_name || "Unnamed"}…`} className="flex-1 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring/30" />
               <button onClick={send} className="p-2.5 rounded-lg bg-gradient-primary text-primary-foreground shadow-glow"><Send className="size-4" /></button>
             </div>
           </>

@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/_app/directory")({ component: Directory });
 
-type Profile = { id: string; full_name: string; email: string; department: string | null; avatar_url: string | null };
+type Profile = { id: string; full_name: string; department: string | null; avatar_url: string | null };
 
 function Directory() {
   const { user } = useAuth();
@@ -16,7 +16,7 @@ function Directory() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from("profiles").select("id, full_name, email, department, avatar_url").order("full_name").then(({ data }) => {
+    supabase.from("profiles").select("id, full_name, department, avatar_url").order("full_name").then(({ data }) => {
       setPeople((data ?? []) as Profile[]);
       setLoading(false);
     });
@@ -26,7 +26,7 @@ function Directory() {
   const filtered = people
     .filter((p) => p.id !== user?.id)
     .filter((p) => dept === "All" || p.department === dept)
-    .filter((p) => (p.full_name + " " + p.email + " " + (p.department ?? "")).toLowerCase().includes(q.toLowerCase()));
+    .filter((p) => (p.full_name + " " + (p.department ?? "")).toLowerCase().includes(q.toLowerCase()));
 
   return (
     <div className="space-y-6">
@@ -38,7 +38,7 @@ function Directory() {
       <div className="glass rounded-2xl p-4 flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, email, department" className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-border bg-card outline-none focus:ring-2 focus:ring-ring/30" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or department" className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-border bg-card outline-none focus:ring-2 focus:ring-ring/30" />
         </div>
         <select value={dept} onChange={(e) => setDept(e.target.value)} className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
           {departments.map((d) => <option key={d}>{d}</option>)}
@@ -53,11 +53,11 @@ function Directory() {
             <div key={p.id} className="glass rounded-2xl p-5 flex flex-col">
               <div className="flex items-center gap-3">
                 <div className="size-12 rounded-full bg-gradient-primary text-primary-foreground flex items-center justify-center font-semibold">
-                  {(p.full_name || p.email).split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase()}
+                  {(p.full_name || "?").split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <div className="font-semibold truncate">{p.full_name || p.email}</div>
-                  <div className="text-xs text-muted-foreground truncate">{p.email}</div>
+                  <div className="font-semibold truncate">{p.full_name || "Unnamed"}</div>
+                  {p.department && <div className="text-xs text-muted-foreground truncate">{p.department}</div>}
                 </div>
               </div>
               {p.department && (

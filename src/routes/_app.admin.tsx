@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_app/admin")({ component: Admin });
 
-type Profile = { id: string; full_name: string; email: string; department: string | null; created_at: string };
+type Profile = { id: string; full_name: string; email?: string | null; department: string | null; created_at: string };
 
 function Admin() {
   const { user, loading } = useAuth();
@@ -29,7 +29,7 @@ function Admin() {
       const startToday = new Date(now); startToday.setHours(0, 0, 0, 0);
 
       const [profs, mailsAll, msgsAll, mails7, msgs7, mailsRecent, msgsRecent, activeMailers, activeChatters] = await Promise.all([
-        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+        supabase.from("profiles").select("id, full_name, department, created_at").order("created_at", { ascending: false }),
         supabase.from("mails").select("id", { count: "exact", head: true }),
         supabase.from("messages").select("id", { count: "exact", head: true }),
         supabase.from("mails").select("id, created_at").gte("created_at", since7.toISOString()),
@@ -42,7 +42,7 @@ function Admin() {
 
       const ppl = (profs.data ?? []) as Profile[];
       setProfiles(ppl);
-      const byId = Object.fromEntries(ppl.map((p) => [p.id, p.full_name || p.email]));
+      const byId = Object.fromEntries(ppl.map((p) => [p.id, p.full_name || "Unknown"]));
 
       const active = new Set<string>();
       (activeMailers.data ?? []).forEach((r) => active.add(r.sender_id));
@@ -134,7 +134,6 @@ function Admin() {
             <thead className="bg-muted/60 text-xs uppercase text-muted-foreground">
               <tr>
                 <th className="text-left p-3">Name</th>
-                <th className="text-left p-3">Email</th>
                 <th className="text-left p-3">Department</th>
                 <th className="text-left p-3">Joined</th>
               </tr>
@@ -144,11 +143,10 @@ function Admin() {
                 <tr key={p.id} className="border-t border-border hover:bg-accent/40">
                   <td className="p-3">
                     <div className="flex items-center gap-3">
-                      <div className="size-9 rounded-full bg-gradient-primary text-primary-foreground flex items-center justify-center text-xs font-semibold">{(p.full_name || p.email).split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase()}</div>
+                      <div className="size-9 rounded-full bg-gradient-primary text-primary-foreground flex items-center justify-center text-xs font-semibold">{(p.full_name || "?").split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase()}</div>
                       <div className="font-medium">{p.full_name || "—"}</div>
                     </div>
                   </td>
-                  <td className="p-3 text-muted-foreground">{p.email}</td>
                   <td className="p-3">{p.department ?? "—"}</td>
                   <td className="p-3 text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</td>
                 </tr>
