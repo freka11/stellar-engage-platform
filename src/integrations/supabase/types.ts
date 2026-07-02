@@ -124,18 +124,29 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      directory: {
+        Row: {
+          avatar_url: string | null
+          department: string | null
+          full_name: string | null
+          id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          department?: string | null
+          full_name?: string | null
+          id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          department?: string | null
+          full_name?: string | null
+          id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      get_directory: {
-        Args: never
-        Returns: {
-          avatar_url: string
-          department: string
-          full_name: string
-          id: string
-        }[]
-      }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
