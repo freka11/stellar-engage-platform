@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_app/admin")({ component: Admin });
 
-type Profile = { id: string; full_name: string; email: string; department: string | null; created_at: string };
+type Profile = { id: string; full_name: string; email?: string | null; department: string | null; created_at: string };
 
 function Admin() {
   const { user, loading } = useAuth();
@@ -29,7 +29,7 @@ function Admin() {
       const startToday = new Date(now); startToday.setHours(0, 0, 0, 0);
 
       const [profs, mailsAll, msgsAll, mails7, msgs7, mailsRecent, msgsRecent, activeMailers, activeChatters] = await Promise.all([
-        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+        supabase.from("profiles").select("id, full_name, department, created_at").order("created_at", { ascending: false }),
         supabase.from("mails").select("id", { count: "exact", head: true }),
         supabase.from("messages").select("id", { count: "exact", head: true }),
         supabase.from("mails").select("id, created_at").gte("created_at", since7.toISOString()),
@@ -42,7 +42,7 @@ function Admin() {
 
       const ppl = (profs.data ?? []) as Profile[];
       setProfiles(ppl);
-      const byId = Object.fromEntries(ppl.map((p) => [p.id, p.full_name || p.email]));
+      const byId = Object.fromEntries(ppl.map((p) => [p.id, p.full_name || "Unknown"]));
 
       const active = new Set<string>();
       (activeMailers.data ?? []).forEach((r) => active.add(r.sender_id));
