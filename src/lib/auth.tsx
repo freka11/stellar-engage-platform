@@ -18,7 +18,7 @@ interface AuthCtx {
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string, expectedRole: Role) => Promise<void>;
-  signUp: (data: { email: string; password: string; fullName: string; role: Role; department: string }) => Promise<void>;
+  signUp: (data: { email: string; password: string; fullName: string; department: string }) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
