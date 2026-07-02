@@ -39,10 +39,10 @@ function LoginPage() {
       } else if (mode === "signup") {
         if (!email || !password || !fullName) throw new Error("Fill in all fields");
         if (password.length < 6) throw new Error("Password must be at least 6 characters");
-        await signUp({ email, password, fullName, role, department });
+        await signUp({ email, password, fullName, department });
         toast.success("Account created — signing you in…");
-        // Auto-confirm is on; sign in immediately for a smooth flow
-        await signIn(email, password, role);
+        // New accounts are always provisioned as 'employee' server-side.
+        await signIn(email, password, "employee");
         navigate({ to: "/dashboard" });
       } else {
         if (!email) throw new Error("Enter your email");
@@ -95,9 +95,12 @@ function LoginPage() {
                 {mode === "signin" ? "Sign in to Crescent Connect" : "Create your account"}
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                {mode === "signin" ? "Choose your role to access the right workspace." : "Choose a role for your new account."}
+                {mode === "signin"
+                  ? "Choose your role to access the right workspace."
+                  : "New accounts are created as Employee. An admin can promote you later."}
               </p>
 
+              {mode === "signin" && (
               <div className="mt-6 grid grid-cols-2 gap-2 p-1 bg-muted rounded-xl">
                 {(["employee", "admin"] as Role[]).map((r) => (
                   <button
@@ -111,6 +114,7 @@ function LoginPage() {
                   </button>
                 ))}
               </div>
+              )}
             </>
           )}
 
@@ -153,7 +157,7 @@ function LoginPage() {
             <button disabled={busy} className="btn-primary w-full">
               {busy ? <Loader2 className="size-4 animate-spin" /> : (
                 mode === "signin" ? `Sign in as ${role === "admin" ? "Admin" : "Employee"}` :
-                mode === "signup" ? `Create ${role === "admin" ? "Admin" : "Employee"} account` :
+                mode === "signup" ? `Create Employee account` :
                 "Send reset link"
               )}
             </button>

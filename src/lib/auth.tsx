@@ -18,7 +18,7 @@ interface AuthCtx {
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string, expectedRole: Role) => Promise<void>;
-  signUp: (data: { email: string; password: string; fullName: string; role: Role; department: string }) => Promise<void>;
+  signUp: (data: { email: string; password: string; fullName: string; department: string }) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -94,14 +94,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUp: AuthCtx["signUp"] = async ({ email, password, fullName, role, department }) => {
+  const signUp: AuthCtx["signUp"] = async ({ email, password, fullName, department }) => {
     const redirectTo = `${window.location.origin}/dashboard`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectTo,
-        data: { full_name: fullName, role, department },
+        // Role is intentionally NOT sent from the client. New users are always
+        // provisioned as 'employee' by the server-side handle_new_user trigger.
+        // Admin promotion must be performed by an existing admin.
+        data: { full_name: fullName, department },
       },
     });
     if (error) throw error;
