@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 
 type Folder = "inbox" | "sent";
-type Profile = { id: string; full_name: string; email: string; department: string | null };
+type Profile = { id: string; full_name: string; department: string | null };
 type MailRow = {
   id: string;
   sender_id: string;
@@ -47,7 +47,7 @@ function MailPage() {
   }, [search.to]);
 
   useEffect(() => {
-    supabase.from("profiles").select("id, full_name, email, department").order("full_name").then(({ data }) => {
+    supabase.from("profiles").select("id, full_name, department").order("full_name").then(({ data }) => {
       setPeople((data ?? []) as Profile[]);
     });
   }, []);
