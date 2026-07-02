@@ -39,10 +39,10 @@ function LoginPage() {
       } else if (mode === "signup") {
         if (!email || !password || !fullName) throw new Error("Fill in all fields");
         if (password.length < 6) throw new Error("Password must be at least 6 characters");
-        await signUp({ email, password, fullName, role, department });
+        await signUp({ email, password, fullName, department });
         toast.success("Account created — signing you in…");
-        // Auto-confirm is on; sign in immediately for a smooth flow
-        await signIn(email, password, role);
+        // New accounts are always provisioned as 'employee' server-side.
+        await signIn(email, password, "employee");
         navigate({ to: "/dashboard" });
       } else {
         if (!email) throw new Error("Enter your email");
